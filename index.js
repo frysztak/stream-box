@@ -14,7 +14,7 @@ var index = fs.readFileSync('index.html', 'utf-8')
 class Stream {
     constructor() {
         this.streamType = 'radio'
-        this.id = -1
+        this.id = 0
     }
 };
 
@@ -29,8 +29,7 @@ app.get('/', function (req, res) {
 
     for (i = 0; i < len; i++) {
         name = radio_stations[i]["name"]
-        btnclass = currentStream.id == i ? "pure-button button-on" : "pure-button button-off";
-        btntext = currentStream.id == i ? "wyłącz" : "włącz";
+        btndisabled = currentStream.id == i ? 'disabled' : '';
 
         html += `
             <div class="pure-g">
@@ -38,9 +37,10 @@ app.get('/', function (req, res) {
                     <p>${name}</p>
                 </div>
                 <div class="pure-u-1-2">
-                    <button class="${btnclass}"
+                    <button class="pure-button pure-button-primary"
                             id="${i}"
-                            onclick="buttonClick(this.id)">${btntext}</button>
+                            onclick="buttonClick(this.id)"
+                            ${btndisabled}>włącz</button>
                 </div>
             </div>`;
     }
@@ -53,25 +53,17 @@ app.get('/stats', function(req, res) {
 });
 
 http.listen(8080, function () {
-    if (database['lastStation'] != -1)
-        playStream(database['lastStation']);
+    id = 0;
+    mpv.loadFile(radio_stations[id]["url"]);
+    io.emit('setActive', id);
 })
 
 var playStream = function(id) {
-    currentId = currentStream.id;
-    if (currentId == id) {
-        // deliberate stop
-        mpv.stop();
-        currentStream.id = -1;
-        saveDB();
-    } else {
-        if (currentId != -1) {
-            mpv.stop();
-            io.emit('setInactive', currentId);
-        }
-        desiredStream.id = id;
-        mpv.loadFile(radio_stations[id]["url"]);
-    }
+    // stop current stream
+    io.emit('enableButton', currentStream.id);
+    currentStream.id = id;
+    mpv.loadFile(radio_stations[id]["url"]);
+    io.emit('disableButton', id);
 };
 
 var saveDB = function() {
@@ -85,21 +77,6 @@ io.on('connection', function(socket){
     socket.on('click', function(id) {
         playStream(id);
     });
-});
-
-mpv.on('stopped', function() {
-    io.emit('setInactive', currentStream.id);
-    currentStream.id = -1;
-});
-
-mpv.on('statuschange', function(status) {
-    if (status["path"] != null) {
-        currentStream.id = desiredStream.id;
-        io.emit('setActive', currentStream.id);
-    } else {
-        currentStream.id = -1;
-        io.emit('setInactive', desiredStream.id);
-    }
 });
 
 setInterval(function() {

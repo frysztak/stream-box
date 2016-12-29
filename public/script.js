@@ -4,12 +4,12 @@ function buttonClick(id) {
     socket.emit('click', id);
 }
 
-socket.on('setActive', function(id) {
-    $('#' + id).removeClass('button-off').addClass('button-on').text('wyłącz');
+socket.on('enableButton', function(id) {
+    $('#' + id).prop('disabled', false);
 });
 
-socket.on('setInactive', function(id) {
-    $('#' + id).removeClass('button-on').addClass('button-off').text('włącz');
+socket.on('disableButton', function(id) {
+    $('#' + id).prop('disabled', true);
 });
 
 socket.on('setInfo', function(info) {
