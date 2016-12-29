@@ -5,6 +5,7 @@ var io = require('socket.io')(http);
 var fs = require('fs');
 var node_mpv = require('node-mpv');
 var path = require('path');
+var stats = require('./stats.js');
 
 var database = JSON.parse(fs.readFileSync('db.json', 'utf-8'))
 var radio_stations = database["radio_stations"]
@@ -46,6 +47,10 @@ app.get('/', function (req, res) {
 
     res.send(index.replace('##INSERT_THINGS_HERE##', html))
 })
+
+app.get('/stats', function(req, res) {
+    res.send(stats.getStats());
+});
 
 http.listen(8080, function () {
     if (database['lastStation'] != -1)

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>Stream-box - stats</title>
+
+        <link rel="stylesheet" href="pure-min.css">
+        <link rel="stylesheet" href="style.css">
+
+        <script src="socket.io-1.4.5.js"></script>
+        <script src="jquery-3.1.1.slim.min.js"></script>
+        <script src="script.js"></script>
+    </head>
+    <body>
+        <div id="wrapper">
+
+            <div class="pure-g">
+                <div class="pure-u-1-2">
+                    <p>Link quality:</p>
+                </div>
+                <div class="pure-u-1-2">
+                    <p>##LINK_QUALITY##</p>
+                </div>
+            </div>
+
+            <div class="pure-g">
+                <div class="pure-u-1-2">
+                    <p>SoC temperature:</p>
+                </div>
+                <div class="pure-u-1-2">
+                    <p>##TEMPERATURE##</p>
+                </div>
+            </div>
+            
+            <div class="pure-g">
+                <div class="pure-u-1-2">
+                    <p>Uptime:</p>
+                </div>
+                <div class="pure-u-1-2">
+                    <p>##UPTIME##</p>
+                </div>
+            </div>
+
+        </div>
+    </body>
+
+</html>
