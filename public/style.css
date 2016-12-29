@@ -1,0 +1,14 @@
+#wrapper {
+   max-width: 300px;
+   margin: 5px 0 0 5px;
+}
+
+.button-off {
+    color: white;
+    background: rgb(28, 184, 65); /* this is a green */
+}
+
+.button-on {
+    color: white;
+    background: rgb(223, 117, 20); /* this is an orange */
+}

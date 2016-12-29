@@ -1,0 +1,30 @@
+{
+  "radio_stations": [
+    {
+      "name": "Trójka",
+      "showInfo": true,
+      "url": "http://stream3.polskieradio.pl:8954/listen.pls"
+    },
+    {
+      "name": "RMF Classic",
+      "showInfo": true,
+      "url": "http://www.rmfon.pl/n/rmfclassic.pls"
+    },
+    {
+      "name": "Zet Gold",
+      "showInfo": true,
+      "url": "http://www.emsoft.strefa.pl/inne/zetgold.m3u"
+    },
+    {
+      "name": "Radio Zet",
+      "showInfo": true,
+      "url": "http://zet-net-01.cdn.eurozet.pl:8400/listen.pls"
+    },
+    {
+      "name": "RMF FM",
+      "showInfo": true,
+      "url": "http://www.rmfon.pl/n/rmffm.pls"
+    }
+  ],
+  "lastStation": -1
+}
