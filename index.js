@@ -6,30 +6,68 @@ var fs = require('fs');
 var node_mpv = require('node-mpv');
 var path = require('path');
 var stats = require('./stats.js');
+var low = require('lowdb');
 
-var database = JSON.parse(fs.readFileSync('db.json', 'utf-8'))
-var radio_stations = database["radio_stations"]
-var index = fs.readFileSync('index.html', 'utf-8')
+// constants
+const db = low('db.json');
+db.defaults(
+    { 
+        "radio_stations": [
+            {
+                "name": "Trójka",
+                "url": "http://stream3.polskieradio.pl:8954/listen.pls"
+            },
+            {
+                "name": "RMF Classic",
+                "url": "http://www.rmfon.pl/n/rmfclassic.pls"
+            },
+            {
+                "name": "Zet Gold",
+                "url": "http://www.emsoft.strefa.pl/inne/zetgold.m3u"
+            },
+            {
+                "name": "Radio Zet",
+                "url": "http://zet-net-01.cdn.eurozet.pl:8400/listen.pls"
+            },
+            {
+                "name": "RMF FM",
+                "url": "http://www.rmfon.pl/n/rmffm.pls"
+            }
+        ],
+        "lastStation": 0
+    }).value();
 
-class Stream {
-    constructor() {
-        this.streamType = 'radio'
-        this.id = 0
-    }
-};
+const index = fs.readFileSync('index.html', 'utf-8');
+const radio_stations = db.get('radio_stations').value();
+const mpv = new node_mpv({ "audio_only" : true });
 
-var currentStream = new Stream();
-var desiredStream = new Stream();
-var mpv = new node_mpv({ "audio_only" : true });
+// sole variable, it seems
+var currentStreamId = db.get('lastStation').value();
 
+// start server
+http.listen(8080, function () {
+    // load last station on start-up
+    mpv.loadFile(radio_stations[currentStreamId]["url"]);
+})
+
+// react to button clicks
+io.on('connection', function(socket){
+    socket.on('click', function(id) {
+        mpv.loadFile(radio_stations[id]["url"]);
+        io.emit('enableButton', currentStreamId);
+        io.emit('disableButton', id);
+        currentStreamId = id;
+        db.set('lastStation', id).value();
+    });
+});
+
+// HTML-related stuff
 app.use(express.static(path.join(__dirname, '/public')))
 app.get('/', function (req, res) {
-    len = radio_stations.length
     html = ''
-
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < radio_stations.length; i++) {
         name = radio_stations[i]["name"]
-        btndisabled = currentStream.id == i ? 'disabled' : '';
+        btndisabled = currentStreamId == i ? 'disabled' : '';
 
         html += `
             <div class="pure-g">
@@ -51,36 +89,5 @@ app.get('/', function (req, res) {
 app.get('/stats', function(req, res) {
     res.send(stats.getStats());
 });
-
-http.listen(8080, function () {
-    id = 0;
-    mpv.loadFile(radio_stations[id]["url"]);
-    io.emit('setActive', id);
-})
-
-var playStream = function(id) {
-    // stop current stream
-    io.emit('enableButton', currentStream.id);
-    currentStream.id = id;
-    mpv.loadFile(radio_stations[id]["url"]);
-    io.emit('disableButton', id);
-};
-
-var saveDB = function() {
-    database['lastStation'] = currentStream.id;
-    fs.writeFileSync('db.json', JSON.stringify(database, null, 2));
-    console.log('saving db.json...');
-};
-
-io.on('connection', function(socket){
-    console.log('a user connected');
-    socket.on('click', function(id) {
-        playStream(id);
-    });
-});
-
-setInterval(function() {
-    saveDB();
-}, 60 * 1000);
 
 // vim: set ft=javascript ts=4 sw=4 sts=4 tw=0 fenc=utf-8 et: 
