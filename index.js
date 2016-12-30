@@ -39,7 +39,7 @@ db.defaults(
 
 const index = fs.readFileSync('index.html', 'utf-8');
 const radio_stations = db.get('radio_stations').value();
-const mpv = new node_mpv({ "audio_only" : true });
+const mpv = new node_mpv({ "audio_only" : true }, [ '--no-ytdl' ]);
 
 // sole variable, it seems
 var currentStreamId = db.get('lastStation').value();
