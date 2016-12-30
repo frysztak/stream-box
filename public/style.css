@@ -1,6 +1,11 @@
-#wrapper {
+#wrapper,
+#wrapper-wider {
    max-width: 300px;
    margin: 5px 0 0 5px;
+}
+
+#wrapper-wider {
+   max-width: 400px;
 }
 
 .button-off {

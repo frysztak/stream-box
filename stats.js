@@ -22,7 +22,10 @@ setInterval(function() {
 
     try {
         uptime = fs.readFileSync('/proc/uptime', 'utf-8').split(' ')[0];
-        stats.uptime = Math.round(parseFloat(uptime)/60);
+        var date = new Date(parseFloat(uptime) * 1000);
+        stats.uptime = `${date.getUTCDate() - 1} days,
+                        ${date.getUTCHours()} hours,
+                        ${date.getUTCMinutes()} minutes`;
     } catch(e) {}
 }, 1000);
 
