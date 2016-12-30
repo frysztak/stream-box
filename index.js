@@ -90,4 +90,9 @@ app.get('/stats', function(req, res) {
     res.send(stats.getStats());
 });
 
+// restart playback
+mpv.on('stopped', function() {
+    mpv.loadFile(radio_stations[currentStreamId]["url"]);
+});
+
 // vim: set ft=javascript ts=4 sw=4 sts=4 tw=0 fenc=utf-8 et: 
